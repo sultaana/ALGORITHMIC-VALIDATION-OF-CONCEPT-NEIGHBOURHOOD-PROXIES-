@@ -1,0 +1,30 @@
+import umap
+import hdbscan
+from sklearn.decomposition import PCA
+from sklearn.metrics import silhouette_score
+
+# --- PCA ---
+pca_step = PCA(n_components=50, random_state=42)
+pca_embeddings_50 = pca_step.fit_transform(embeddings_raw)
+
+# --- UMAP on PCA ---
+umap_after_pca = umap.UMAP(
+    n_neighbors=15,
+    min_dist=0.1,
+    n_components=2,
+    random_state=42
+)
+pca_umap_embeddings = umap_after_pca.fit_transform(pca_embeddings_50)
+
+# --- HDBSCAN on PCA→UMAP ---
+hdbscan_pca_umap = hdbscan.HDBSCAN(
+    min_cluster_size=8,
+    min_samples=2,
+    cluster_selection_epsilon=0.0
+)
+labels_pca_umap = hdbscan_pca_umap.fit_predict(pca_umap_embeddings)
+
+# --- Silhouette score ---
+sil_pca_umap = silhouette_score(pca_umap_embeddings, labels_pca_umap)
+print("Silhouette (PCA → UMAP):", sil_pca_umap)
+
