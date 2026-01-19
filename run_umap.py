@@ -5,7 +5,6 @@ import umap
 import matplotlib.pyplot as plt
 import os
 
-# ---- Correct path to PCA output ----
 FEATURES_PATH = "outputs/pca_features.npy"
 LABELS_PATH = "outputs/labels.npy"
 
@@ -20,14 +19,12 @@ labels = np.load(LABELS_PATH)
 print("Loaded PCA features:", features.shape)
 print("Loaded labels:", labels.shape)
 
-# ---- Optional subsample for speed ----
 N = 5000
 features_small = features[:N]
 labels_small = labels[:N]
 
 print("Using sample:", features_small.shape)
 
-# ---- Run UMAP ----
 reducer = umap.UMAP(
     n_components=2,
     random_state=42,
@@ -40,7 +37,6 @@ embedding = reducer.fit_transform(features_small)
 
 print("UMAP output shape:", embedding.shape)
 
-# ---- Plot ----
 plt.figure(figsize=(8, 8))
 plt.scatter(
     embedding[:, 0],
@@ -53,7 +49,6 @@ plt.title("UMAP Projection (5000 samples)")
 plt.savefig("outputs/umap_plot.png", dpi=300)
 plt.show()
 
-# ---- Save ----
 np.save("outputs/umap_embedding.npy", embedding)
 
 print("Saved UMAP embedding to outputs/umap_embedding.npy")
