@@ -5,7 +5,7 @@ labels = np.load("human_labels.npy", allow_pickle=True)
 print("Type before item():", type(labels))
 print("Array shape:", labels.shape)
 
-labels = labels.item()  # 🔑 THIS IS THE KEY LINE
+labels = labels.item() 
 
 print("Type after item():", type(labels))
 
