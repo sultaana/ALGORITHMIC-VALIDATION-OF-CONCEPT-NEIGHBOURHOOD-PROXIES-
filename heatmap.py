@@ -2,7 +2,6 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-# Jaccard overlap matrix from your results
 jaccard_matrix = np.array([
     [1.0, 0.4, 0.007, 0.001],
     [0.4, 1.0, 0.008, 0.001],
