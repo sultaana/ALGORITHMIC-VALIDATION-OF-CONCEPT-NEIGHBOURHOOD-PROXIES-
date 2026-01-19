@@ -4,22 +4,18 @@ from PIL import Image, ImageTk
 import os
 import numpy as np
 
-# ---------- CONFIGURATION ----------
-IMAGE_FOLDER = "dataset"          # Path to your images
-SAVE_FILE = "human_labels.npy"    # Where labels will be saved
-# ----------------------------------
+IMAGE_FOLDER = "dataset"          
+SAVE_FILE = "human_labels.npy"   
 
 # Load images
 image_files = sorted([f for f in os.listdir(IMAGE_FOLDER) if f.lower().endswith(('.png', '.jpg', '.jpeg'))])
 labels_dict = {}
 
-# If file exists, load previous labels
 if os.path.exists(SAVE_FILE):
     labels_dict = np.load(SAVE_FILE, allow_pickle=True).item()
 
 current_index = 0
 
-# ---------- GUI ----------
 root = tk.Tk()
 root.title("Human Annotation Tool")
 
@@ -38,11 +34,10 @@ def show_image(index):
         return
     img_path = os.path.join(IMAGE_FOLDER, image_files[index])
     img = Image.open(img_path)
-    img.thumbnail((500, 500))  # Resize to fit screen
+    img.thumbnail((500, 500)) 
     img_tk = ImageTk.PhotoImage(img)
     img_label.config(image=img_tk)
     img_label.image = img_tk
-    # Pre-fill previous label if exists
     entry_label.delete(0, tk.END)
     if image_files[index] in labels_dict:
         entry_label.insert(0, labels_dict[image_files[index]])
