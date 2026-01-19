@@ -10,10 +10,7 @@ from sklearn.metrics import adjusted_rand_score
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import LabelEncoder
 
-# -----------------------------
 # CONFIGURATION
-# -----------------------------
-# Folder where your embeddings are
 embedding_folder = "outputs"
 # List of pipeline files
 pipelines = [
@@ -23,17 +20,13 @@ pipelines = [
     "pipeline4_umap_cosine.npy"
 ]
 # Human annotation file
-human_labels_file = "human_labels.npy"  # your saved 1311 annotations
-# Number of nearest neighbors for concept borrowing
+human_labels_file = "human_labels.npy"  
 k_neighbors = 5
 
-# -----------------------------
 # LOAD HUMAN LABELS
-# -----------------------------
 human_labels = np.load(human_labels_file, allow_pickle=True).item()
 print(f"Loaded {len(human_labels)} human annotations")
 
-# Extract lists for easier processing
 image_names = list(human_labels.keys())
 labels = list(human_labels.values())
 
@@ -41,9 +34,7 @@ labels = list(human_labels.values())
 le = LabelEncoder()
 y_true = le.fit_transform(labels)
 
-# -----------------------------
 # RESULTS TABLES
-# -----------------------------
 ari_results = []
 concept_borrowing_results = []
 runtime_memory_results = []
@@ -57,14 +48,12 @@ def compute_concept_borrowing(embeddings, y_true, k=5):
     
     total_matches = 0
     for i in range(len(embeddings)):
-        neighbor_labels = [y_true[j] for j in indices[i][1:]]  # skip self
+        neighbor_labels = [y_true[j] for j in indices[i][1:]] 
         total_matches += sum([y_true[i] == nl for nl in neighbor_labels])
     
     return total_matches / (len(embeddings) * k)
 
-# -----------------------------
-# FUNCTION: Plot Heatmap
-# -----------------------------
+#  Plot Heatmap
 def plot_heatmap(embeddings, labels, pipeline_name):
     plt.figure(figsize=(8,6))
     # Convert labels to numbers for heatmap
@@ -76,9 +65,7 @@ def plot_heatmap(embeddings, labels, pipeline_name):
     plt.close()
     print(f"Saved heatmap for {pipeline_name}")
 
-# -----------------------------
 # RUN PIPELINES
-# -----------------------------
 for pipeline_file in pipelines:
     pipeline_path = os.path.join(embedding_folder, pipeline_file)
     
@@ -96,10 +83,8 @@ for pipeline_file in pipelines:
     # Load embeddings
     embeddings = np.load(pipeline_path)
     
-    # -----------------------------
     # FILTER EMBEDDINGS TO ANNOTATED IMAGES
-    # -----------------------------
-    # Assumes embeddings are in the same order as image_names
+ 
     filtered_embeddings = []
     filtered_labels = []
     filtered_indices = []
@@ -116,33 +101,22 @@ for pipeline_file in pipelines:
     filtered_labels = np.array(filtered_labels)
     y_true_filtered = le.transform(filtered_labels)
     
-    # -----------------------------
     # COMPUTE ARI
-    # -----------------------------
-    # Use kNN to cluster as predicted labels
     nbrs = NearestNeighbors(n_neighbors=2, metric='euclidean').fit(filtered_embeddings)
     distances, indices = nbrs.kneighbors(filtered_embeddings)
-    # simple "predicted" clustering: neighbor's label
     y_pred = [y_true_filtered[indices[i][1]] for i in range(len(filtered_embeddings))]
     ari = adjusted_rand_score(y_true_filtered, y_pred)
     ari_results.append((pipeline_file, ari))
     print(f"Adjusted Rand Index (ARI): {ari}")
     
-    # -----------------------------
     # COMPUTE CONCEPT BORROWING
-    # -----------------------------
     cb = compute_concept_borrowing(filtered_embeddings, y_true_filtered, k=k_neighbors)
     concept_borrowing_results.append((pipeline_file, cb))
     print(f"Concept Borrowing: {cb}")
-    
-    # -----------------------------
     # PLOT HEATMAP
-    # -----------------------------
     plot_heatmap(filtered_embeddings, filtered_labels, pipeline_file.replace(".npy",""))
     
-    # -----------------------------
     # RECORD RUNTIME AND MEMORY
-    # -----------------------------
     end_time = time.time()
     mem_after = process.memory_info().rss / 1e6
     runtime = end_time - start_time
