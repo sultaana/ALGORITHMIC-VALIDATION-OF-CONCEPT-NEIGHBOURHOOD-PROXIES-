@@ -2,7 +2,6 @@ import numpy as np
 import umap
 import matplotlib.pyplot as plt
 
-# Load your embeddings (shape: 5000 samples, 2 features)
 X = np.load("/Users/mac/tinyneigh-project/outputs/umap_embedding.npy")
 
 # UMAP with Euclidean distance
@@ -25,7 +24,7 @@ umap_cos = umap.UMAP(
 )
 embedding_cos = umap_cos.fit_transform(X)
 
-# Plot both side-by-side
+# side-by-side plot 
 plt.figure(figsize=(14, 6))
 
 plt.subplot(1, 2, 1)
