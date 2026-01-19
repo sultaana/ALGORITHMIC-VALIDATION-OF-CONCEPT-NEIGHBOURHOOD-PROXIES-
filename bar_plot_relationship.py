@@ -5,11 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
-# 1️⃣ Define your results folder and pipeline files
-results_folder = "pipeline_results"  # replace with your folder if different
-
-# Example: if you saved CSVs or you want to manually define your results
-# We'll create a dictionary from your last run
+results_folder = "pipeline_results"  
 pipeline_results = {
     'Pipeline': [
         'pipeline1_umap_euclidean.npy',
@@ -22,11 +18,7 @@ pipeline_results = {
     'Runtime_sec': [0.45, 0.14, 0.14, 0.13],
     'PeakMemory_MB': [30.32, 4.51, 3.49, 0.98]
 }
-
-# 2️⃣ Convert to pandas DataFrame
 df = pd.DataFrame(pipeline_results)
-
-# 3️⃣ Plotting
 plt.figure(figsize=(16, 12))
 
 # ARI plot
