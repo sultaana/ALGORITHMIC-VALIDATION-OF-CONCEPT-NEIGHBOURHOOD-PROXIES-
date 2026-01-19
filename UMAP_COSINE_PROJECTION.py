@@ -1,8 +1,6 @@
 import numpy as np
 import umap
 import matplotlib.pyplot as plt
-
-# Load features (adjust path if needed)
 features = np.load("outputs/features.npy")
 
 # UMAP with cosine distance
