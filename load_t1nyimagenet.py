@@ -21,14 +21,14 @@ from tqdm import tqdm
 # --- CONFIG ---
 DATASET_PATH = "/Users/mac/Desktop/config/tiny-imagenet-200"
 TRAIN_ROOT = os.path.join(DATASET_PATH, "train")
-BATCH_SIZE = 64           # adjust for memory / speed
-NUM_WORKERS = 4           # set 0 if you have issues
+BATCH_SIZE = 64         
+NUM_WORKERS = 4           
 OUTPUT_DIR = "./outputs"
-PCA_COMPONENTS = 256      # reduce before UMAP
+PCA_COMPONENTS = 256      
 UMAP_N_COMPONENTS = 2
-DEVICE = "cpu"            # using CPU per your setup
+DEVICE = "cpu"            
 
-# Toggle phases (run one or more)
+
 TEST_LOAD = True
 EXTRACT_FEATURES = True
 RUN_PCA = True
@@ -70,7 +70,7 @@ def phase2_extract_features(dataset):
     with torch.no_grad():
         for images, target in tqdm(loader, desc="Extracting features"):
             images = images.to(device)
-            out = model(images)            # (B, 512)
+            out = model(images)         
             out = out.cpu().numpy()
             features.append(out.astype(np.float32))
             labels.append(target.numpy().astype(np.int32))
@@ -87,7 +87,6 @@ def phase3_pca(features, n_components=PCA_COMPONENTS):
     from sklearn.decomposition import IncrementalPCA
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     ipca = IncrementalPCA(n_components=n_components, batch_size=1000)
-    # fit in chunks if necessary
     ipca.fit(features)
     feats_pca = ipca.transform(features)
     np.save(os.path.join(OUTPUT_DIR, f"pca_features.npy"), feats_pca.astype(np.float32))
@@ -97,7 +96,6 @@ def phase3_pca(features, n_components=PCA_COMPONENTS):
 def phase4_umap(features, n_components=UMAP_N_COMPONENTS):
     import umap
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    # If numba isn't available, UMAP will still run (but slower)
     reducer = umap.UMAP(n_components=n_components, random_state=42)
     embedding = reducer.fit_transform(features)
     np.save(os.path.join(OUTPUT_DIR, f"umap_embedding.npy"), embedding.astype(np.float32))
@@ -114,7 +112,6 @@ def main():
 
     if EXTRACT_FEATURES:
         if dataset is None:
-            # ensure we have a dataset
             from torchvision import datasets, transforms
             transform = transforms.Compose([
                 transforms.Resize((64,64)),
